@@ -18,6 +18,6 @@
 
     - name: copying php OR document dir files
       template:
-        src: /var/www/html/index.php
-        dest: /var/www/html/index.php
+        src: /var/www/html/index.html
+        dest: /var/www/html/index.html
 

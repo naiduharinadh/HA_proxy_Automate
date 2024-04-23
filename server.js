@@ -10,7 +10,7 @@ const http = require('http');
 //cont exec = childprcs.exec
 
 
-const ip = "3.25.121.18" ;
+const ip = "3.106.53.8" ;
 const app = express();
 
 const server = require('http').createServer(app);
@@ -80,13 +80,8 @@ app.post("/terraform",(req,resp)=>{
     let terraformCommand = `terraform -chdir=/root/haproxy/terraform `;
         // REFERENCE COMMAND    terraform apply -var="region=us-west-2" -var="instance_type=t2.micro"
 
-        // terraform plan --dir=./terraform
 
 
-/*
-    variables.forEach((variable, index) => {
-        terraformCommand += `  --var="${variable.value}"  `;
-    });*/
 
         const command = ` bash change_workspace.sh `;
 
@@ -104,13 +99,13 @@ app.post("/terraform",(req,resp)=>{
                         else{
                                     wss.clients.forEach(client => {
                                             if (client.readyState === WebSocket.OPEN) {
-                                            client.send( " qork space changed to "+ workenv );
-					    client.send(" work space updated" ); 
+//                                            client.send( " qork space changed to "+ workenv ); donestep2
+					    client.send("donestep1" ); 
                                         }
                                  });
                                 console.log(stdout);
 
-				let tfplan  = `terraform -chdir=/root/haproxy/terraform  plan  ` ;
+				let tfplan  = `terraform -chdir=/root/haproxy/terraform  plan  -lock=false `;
 				variables.forEach((variable, index) => {
        					 tfplan += `  -var="${variable.value}"   `   ;
 				    });
@@ -123,6 +118,7 @@ app.post("/terraform",(req,resp)=>{
                                                                                         wss.clients.forEach(client => {
                                                                                     if (client.readyState === WebSocket.OPEN) {
                                                                                 client.send("<pre>" + errorMessage + "</pre>");
+									
                                                                                                 }
                                                                                                 });
                                         }
@@ -130,13 +126,18 @@ app.post("/terraform",(req,resp)=>{
 						console.log(stdout);
 						wss.clients.forEach(client => {
                                                                                     if (client.readyState === WebSocket.OPEN) {
-                                                                                client.send("<p>" + stdout + "</p>");
+                                                                                // client.send("<pre>" + stdout + "</pre>");
+											    client.send("donestep2");
                                                                                                 }
                                                                                                 });
                                                                          
 
 //						const tfApply = " bash /root/haproxy/terraform/change_workspace.sh " + " " + workenv;
-						const tfApply = " terraform "+ " " + "apply" + " " + "-auto-approve";
+					//	const tfApply = " terraform "+ " " + "apply" + " " + "-auto-approve";
+						let tfApply  = `terraform -chdir=/root/haproxy/terraform   apply -auto-approve `;
+                                variables.forEach((variable, index) => {
+                                         tfApply += `  -var="${variable.value}"   `   ;
+                                    });
 
 
 								const childProcess = exec(tfApply, (err, stdout, stderr) =>{
@@ -154,7 +155,8 @@ app.post("/terraform",(req,resp)=>{
 									        // Send stdout to clients
 									        wss.clients.forEach(client => {
 									            if (client.readyState === WebSocket.OPEN) {
-									                client.send("<pre>" + stdout + "</pre>");
+									                //client.send("<pre>" + stdout + "</pre>");
+											   client.send("donestep3");
 										            }
 										        });
 										    }

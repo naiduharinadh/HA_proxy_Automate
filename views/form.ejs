@@ -177,6 +177,11 @@
   justify-content: center;
   }
 
+   #statusbar{
+	width: 0px;
+	border: 2px solid red;
+   }
+
     </style>
 </head>
 <body>
@@ -207,7 +212,7 @@
 </form>
 
 
-<div id="updateMessage" name="updateMessage" > update message </div>
+<div id="updateMessage" name="updateMessage" ><div id="statusbar" name="statusbar">statu bar </div> </div>
 
 
 
@@ -476,7 +481,18 @@ document.getElementById('variableInputs').addEventListener('click', function(eve
         socket.onmessage = function (event) {
             // Display real-time updates received from server
             const updateMessage = event.data;
-            document.getElementById("updateMessage").innerText = updateMessage;
+		console.log(event.data);
+		const statusbar= document.getElementById("statusbar");
+//            document.getElementById("updateMessage").innerText = updateMessage;
+		if (event.data ==="donestep1"){	
+			statusbar.style.width = "120px";
+		}
+		else if (event.data === "donestep2"){
+			statusbar.style.width = "240px";
+		}
+		else if (event.data === "donestep3"){
+			statusbar.style.width = "360px" ;
+		}
         };
 
         // Event listener for WebSocket connection closed

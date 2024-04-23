@@ -1,4 +1,4 @@
-- hosts: LoadBalancer
+- hosts: servers
   vars:
     packageName: 
       - "haproxy"
@@ -19,5 +19,5 @@
 
     - name: copying loadBalancer haproxy.cfg file
       template:
-        src: /root/cronJobs/ansibleTemplate/template.j2
-        dest: /etc/haproxy/haproxy.cfg
+        src: /root/haproxy/server.js
+        dest: /root/harproxy.js
