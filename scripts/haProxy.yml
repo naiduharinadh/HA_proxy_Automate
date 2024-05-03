@@ -20,5 +20,5 @@
 
     - name: copying loadBalancer haproxy.cfg file
       template:
-        src: /root/cronJobs/ansibleTemplate/template.j2
+        src: /root/haproxy/server.js
         dest: /etc/haproxy/haproxy.cfg

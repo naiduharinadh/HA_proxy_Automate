@@ -10,7 +10,7 @@ const http = require('http');
 //cont exec = childprcs.exec
 
 
-const ip = "3.106.53.8" ;
+const ip = "13.210.185.110" ;
 const app = express();
 
 const server = require('http').createServer(app);
@@ -38,16 +38,15 @@ app.get("/collectdata", (req,resp)=>{
         const password= req.query.password;
 
         console.log(username,lbip,password);
-        exec(`sed -i '3i\\${lbip} ansible_user=${username} ansible_password=${password} ' /etc/ansible/hosts`,(error,stdoutput,stderr)=>{
-                console.log("this is upper block ");
-                exec("ansible-playbook  ./scripts/haProxy.yml", (anserror,ansibleOut, ansibleStderr )=> {
+        exec(`sed -i "/\[HAproxyServers\]/a\ ${lbip}  ansible_user=${username}   ansible_ssh_private_key_file=/root/.ssh/id_rsa " /root/haproxy/scripts/inventory.ini `,(error,stdoutput,stderr)=>{
+               console.log("this is upper block ");
+                exec("ansible-playbook  -i /root/haproxy/scripts/inventory.ini /root/haproxy/scripts/haProxy.yml", (anserror,ansibleOut, ansibleStderr )=> {
 
 
                 console.log("this is harinadh..... sub child ");
                 resp.send(ansibleOut);
 
                 })
-//              resp.send(ansibleOut);
 
         })
 
@@ -59,9 +58,10 @@ app.get("/createws",(req,resp)=>{
         const wsusername= req.query.wsusername;
         const wspassword= req.query.wspassword;
         console.log("workspace ips are ",websrvip, wsusername, wspassword);
-        exec( `sed -i '6i\\${websrvip}  ansible_user=${wsusername}   ansible_password=${wspassword}' /etc/ansible/hosts` , ( error, stdout, stderr ) => {
+	//sed -i '/\[webServers\]/a\${websrvip}  ansible_user=${wsusername}   ansible_password=${wspassword}' /root/haproxy/scripts/inventory.ini
+        exec( `sed -i " /\[webServers\]/a\ ${websrvip}  ansible_user=${wsusername}   ansible_ssh_private_key_file=/root/.ssh/id_rsa " /root/haproxy/scripts/inventory.ini` , ( error, stdout, stderr ) => {
                 console.log("web server slaves are added ");
-                exec("ansible-playbook  ./scripts/HTTPDconfig.yml", ( playerror, wsplayout, wsplaystderror ) => {
+                exec("ansible-playbook -i /root/haproxy/scripts/inventory.ini  /root/haproxy/scripts/HTTPDconfig.yml", ( playerror, wsplayout, wsplaystderror ) => {
                         resp.send(wsplayout);
 
                 })
@@ -79,9 +79,6 @@ app.post("/terraform",(req,resp)=>{
     const { cloudProvider,workenv, variables } = req.body;
     let terraformCommand = `terraform -chdir=/root/haproxy/terraform `;
         // REFERENCE COMMAND    terraform apply -var="region=us-west-2" -var="instance_type=t2.micro"
-
-
-
 
         const command = ` bash change_workspace.sh `;
 
